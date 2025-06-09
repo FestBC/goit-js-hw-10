@@ -18,11 +18,14 @@ btn.disabled = true;
 btn.addEventListener("click", (event) => {
   event.preventDefault();
   btn.disabled = true;
+  datetimePicker.disabled = true;
 
   const timer = setInterval(() => {
-    if (userSelectedDate > 0) {
+    const timeDifference = userSelectedDate - Date.now();
 
-      const { days, hours, minutes, seconds } = convertMs(userSelectedDate);
+    if (timeDifference > 0) {
+
+      const { days, hours, minutes, seconds } = convertMs(timeDifference);
       const { fDays, fHours, fMinutes, fSeconds } = addLeadingZero({ days, hours, minutes, seconds });
 
       daysValue.textContent = fDays;
@@ -31,10 +34,10 @@ btn.addEventListener("click", (event) => {
       secondsValue.textContent = fSeconds;
 
       console.log(`Interval timer is working: ${days}d, ${hours}h, ${minutes}m, ${seconds}s.`);
-
-      userSelectedDate -= 1000;
     } else {
       clearInterval(timer);
+      datetimePicker.disabled = false;
+
       console.log("Interval timer has been stopped!");
     }
   }, 1000);
@@ -49,7 +52,7 @@ flatpickr(datetimePicker, {
       console.log(selectedDates[0]);
       
       if (Date.now() <= selectedDates[0].getTime()) {
-        userSelectedDate = selectedDates[0].getTime() - Date.now();
+        userSelectedDate = selectedDates[0].getTime();
         btn.disabled = false;
       } else {
           iziToast.error({
@@ -95,6 +98,6 @@ console.log(convertMs(2000)); // {days: 0, hours: 0, minutes: 0, seconds: 2}
 console.log(convertMs(140000)); // {days: 0, hours: 0, minutes: 2, seconds: 20}
 console.log(convertMs(24140000)); // {days: 0, hours: 6 minutes: 42, seconds: 20}
 
-console.log(addLeadingZero(convertMs(2000))); // {days: 0, hours: 0, minutes: 0, seconds: 2}
-console.log(addLeadingZero(convertMs(140000))); // {days: 0, hours: 0, minutes: 2, seconds: 20}
-console.log(addLeadingZero(convertMs(5891152905812))); // {days: 0, hours: 6 minutes: 42, seconds: 20}
+console.log(addLeadingZero(convertMs(2000))); // {fDays: "00", fHours: "00", fMinutes: "00", fSeconds: "02"}
+console.log(addLeadingZero(convertMs(140000))); // {fDays: "00", fHours: "00", fMinutes: "02", fSeconds: "20"}
+console.log(addLeadingZero(convertMs(24140000))); // {fDays: "00", fHours: "06" fMinutes: "42", fSeconds: "20"}
